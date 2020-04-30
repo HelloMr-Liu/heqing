@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title></title>
+    <style>
+    </style>
+
+    <!--  引入对应的 layui、element-ui、mian(自定义样式) 的css样式 -->
+    <link th:href="@{/css/layui.css}" rel="stylesheet">
+    <!-- <link th:href="@{/css/main.css}" rel="stylesheet">-->
+    <link th:href="@{/css/element-ui.css}" rel="stylesheet">
+</head>
+
+
+<body>
+<div id="app">
+    <div class="layui-container">
+        <form class="layui-form" action="">
+            <div class="layui-row">
+                <div class="layui-col-md3">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">用户名</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="userAccount" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md3">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">密码</label>
+                        <div class="layui-input-block">
+                            <input type="password" name="password" lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-md3">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+</body>
+
+
+<!-- 引入组件库 -->
+<script th:src="@{/js/jquery-1.9.1.min.js}"></script>
+<script th:src="@{/js/vue.min.js}"></script>
+<script th:src="@{/js/element-ui.js}"></script>
+<!--采用非模块化方式layUi js -->
+<script th:src="@{/layui.all.js}"></script>
+<!--<script th:src="@{/js/main.js}"></script>-->
+
+
+
+<script type="text/javascript">
+    var baseUrl="[[@{/}]]";
+    var socket;
+    var app = new Vue({
+        el: "#app",
+        data: {
+            tableData:[],
+            getMessageData:[]
+        }
+
+    });
+
+
+    //登录提交
+    layui.form.on('submit(demo1)', function(data){
+        //var jsonData=JSON.stringify(data.field);
+        //let currdata={userAccount:data.field.userAccount,password:data.field.password};
+        $.ajax({
+            type : "post",
+            url : baseUrl+"login",
+            data : data.field,
+            success : function(data){
+                if(data.status==200){
+                    window.localStorage["USER_TOKEN"] = data.data;
+
+                    //登录成功后跳转页面
+                    window.location.href = baseUrl+"showUserlist";
+             se{
+                    layer.msg(data.msg, {
+                        time: 2000, //2s后自动关闭
+                    });
+                }
+            }
+        });
+        return false;
+    });
+
+
+
+
+    function  aaa() {
+        $.ajax({
+            type : "post",
+            url : url,
+            data : formData,
+            processData : false,
+            contentType : false,
+            success : function(data){
+                if (data.status==200) {
+                    console.log(data.data);
+                    alert("文件上传成功!");
+                    var text="<table>"
+                    text+="<caption>"+data.data[0][0]+"</caption>"
+                    $.each(data.data,function (i,content){
+                        if(i!=0){
+                            text+="<tr>";
+                            $.each(content,function (i,myData){
+                                text+="<td >"+myData+"</td>";
+                            });
+                            text+="</tr>";
+                        }
+
+                    });
+                    text+="</table>"
+                    $("#myTable").append(text);
+                    //$("#myTable").html(text);
+                }else{
+                    alert(data.msg);
+                }
+            }
+        });
+
+    }
+
+
+</script>
+
+</html>
